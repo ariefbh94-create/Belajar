@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengumuman Kelulusan</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .logo p {
+      color: #cbd5e1;
+    }
+
+    .search-box {
+      margin-top: 30px;
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 15px 25px;
+      border: none;
+      border-radius: 12px;
+      background: #22c55e;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #16a34a;
+
+    }
+
+    .result {
+      margin-top: 30px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 15px;
+      padding: 25px;
+      display: none;
+    }
+
+    .result h2 {
+      margin-bottom: 20px;
+      color: #22c55e;
+    }
+
+    .item {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .label {
+      font-weight: bold;
+      color: #cbd5e1;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .status-lulus {
+      background: #22c55e;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .not-found {
+      text-align: center;
+      margin-top: 20px;
+      color: #f87171;
+    }
+
+    @media(max-width: 600px){
+      .search-box {
+        flex-direction: column;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo">
+      <h1>PENGUMUMAN KELULUSAN</h1>
+      <p>Tahun Pelajaran 2025/2026</p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="nis" placeholder="Masukkan NIS">
+      <button onclick="cekKelulusan()">Cek</button>
+    </div>
+
+    <div id="result" class="result"></div>
+  </div>
+
+<script>
+
+  // GANTI DENGAN URL WEB APP APPS SCRIPT
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxnmwtVrCXyYHkTix4kUje4wJs9lcQ8-7UNrQkfWpAg00w6aGX6-5owtrVodAbp_9VG/exec';
+
+  async function cekKelulusan() {
+    const nis = document.getElementById('nis').value.trim();
+    const result = document.getElementById('result');
+
+    if (!nis) {
+      alert('Masukkan NIS terlebih dahulu');
+      return;
+    }
+
+    result.style.display = 'block';
+    result.innerHTML = 'Loading...';
+
+    try {
+      const response = await fetch(`${API_URL}?nis=${nis}`);
+      const data = await response.json();
+
+      if (data.length > 0) {
+        const siswa = data[0];
+
+        result.innerHTML = `
+
+          <h2>Data Kelulusan</h2>
+
+          <div class="item">
+            <span class="label">Kelas</span>
+            ${siswa.kelas}
+          </div>
+
+          <div class="item">
+            <span class="label">NIS</span>
+            ${siswa.nis}
+          </div>
+
+          <div class="item">
+            <span class="label">NISN</span>
+            ${siswa.nisn}
+          </div>
+
+          <div class="item">
+            <span class="label">Nama</span>
+            ${siswa.nama}
+          </div>
+
+          <div class="status-lulus">
+            ${siswa.keterangan}
+          </div>
+        `;
+
+      } else {
+        result.innerHTML = `
+          <div class="not-found">
+            Data tidak ditemukan
+          </div>
+        `;
+      }
+
+    } catch (error) {
+      result.innerHTML = `
+        <div class="not-found">
+          Terjadi kesalahan koneksi
+        </div>
+      `;
+    }
+  }
+  </script>
+
+</body>
+</html>
